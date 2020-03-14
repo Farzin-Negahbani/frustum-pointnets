@@ -1,26 +1,14 @@
-## Frustum PointNets for 3D Object Detection from RGB-D Data
-Created by <a href="http://charlesrqi.com" target="_blank">Charles R. Qi</a>, <a href="http://www.cs.unc.edu/~wliu/" target="_black">Wei Liu</a>, <a href="http://www.cs.cornell.edu/~chenxiawu/" target="_blank">Chenxia Wu</a>, <a href="http://cseweb.ucsd.edu/~haosu/" target="_blank">Hao Su</a> and <a href="http://geometry.stanford.edu/member/guibas/" target="_blank">Leonidas J. Guibas</a> from <a href="http://www.stanford.edu" target="_blank">Stanford University</a> and <a href="http://nuro.ai" target="_blank">Nuro Inc.</a>
-
-![teaser](https://github.com/charlesq34/frustum-pointnets/blob/master/doc/teaser.jpg)
-
-## Introduction
-This repository is code release for our CVPR 2018 paper (arXiv report [here](https://arxiv.org/abs/1711.08488)). In this work, we study 3D object detection from RGB-D data. We propose a novel detection pipeline that combines both mature 2D object detectors and the state-of-the-art 3D deep learning techniques. In our pipeline, we firstly build object proposals with a 2D detector running on RGB images, where each 2D bounding box defines a 3D frustum region. Then based on 3D point clouds in those frustum regions, we achieve 3D instance segmentation and amodal 3D bounding box estimation, using PointNet/PointNet++ networks (see references at bottom).
-
-By leveraging 2D object detectors, we greatly reduce 3D search space for object localization. The high resolution and rich texture information in images also enable high recalls for smaller objects like pedestrians or cyclists that are harder to localize by point clouds only. By adopting PointNet architectures, we are able to directly work on 3D point clouds, without the necessity to voxelize them to grids or to project them to image planes. Since we directly work on point clouds, we are able to fully respect and exploit the 3D geometry -- one example is the series of coordinate normalizations we apply, which help canocalizes the learning problem. Evaluated on KITTI and SUNRGBD benchmarks, our system significantly outperforms previous state of the art and is still in leading positions on current <a href="http://www.cvlibs.net/datasets/kitti/eval_object.php?obj_benchmark=3d">KITTI leaderboard</a>.
-
-For more details of our architecture, please refer to our paper or <a href="http://stanford.edu/~rqi/frustum-pointnets" target="_blank">project website</a>.
-
-## Citation
-If you find our work useful in your research, please consider citing:
-
-        @article{qi2017frustum,
-          title={Frustum PointNets for 3D Object Detection from RGB-D Data},
-          author={Qi, Charles R and Liu, Wei and Wu, Chenxia and Su, Hao and Guibas, Leonidas J},
-          journal={arXiv preprint arXiv:1711.08488},
-          year={2017}
-        }
+## Revised Frustum PointNets for 3D Object Detection from RGB-D Data
+Under Construction...
 
 ## Installation
+This code tested under Ubuntu 18.04.
+- Python 2.7
+- CUDA 10
+- CudNN 7.5
+- Tensorflow 1.14
+- OpenCV 4
+
 Install <a href="https://www.tensorflow.org/install/">TensorFlow</a>.There are also some dependencies for a few Python libraries for data processing and visualizations like `cv2`, `mayavi`  etc. It's highly recommended that you have access to GPUs.
 
 To use the Frustum PointNets v2 model, we need access to a few custom Tensorflow operators from PointNet++. The TF operators are included under `models/tf_ops`, you need to compile them (check `tf_xxx_compile.sh` under each ops subfolder) first. Update `nvcc` and `python` path if necessary. The compile script is written for TF1.4. There is also an option for TF1.2 in the script. If you are using earlier version it's possible that you need to remove the `-D_GLIBCXX_USE_CXX11_ABI=0` flag in g++ command in order to compile correctly.
@@ -28,8 +16,6 @@ To use the Frustum PointNets v2 model, we need access to a few custom Tensorflow
 If we want to evaluate 3D object detection AP (average precision), we need also to compile the evaluation code (by running `compile.sh` under `train/kitti_eval`). Check `train/kitti_eval/README.md` for details.
 
 Some of the demos require `mayavi` library. We have provided a convenient script to install `mayavi` package in Python, a handy package for 3D point cloud visualization. You can check it at `mayavi/mayavi_install.sh`. If the installation succeeds, you should be able to run `mayavi/test_drawline.py` as a simple demo. Note: the library works for local machines and seems do not support remote access with `ssh` or `ssh -X`.
-
-The code is tested under TF1.2 and TF1.4 (GPU version) and Python 2.7 (version 3 should also work) on Ubuntu 14.04 and Ubuntu 16.04 with NVIDIA GTX 1080 GPU. It is highly recommended to have GPUs on your machine and it is required to have at least 8GB available CPU memory.
 
 ## Usage
 
@@ -76,7 +62,10 @@ Our code is released under the Apache 2.0 license (see LICENSE file for details)
 * <a href="http://stanford.edu/~rqi/pointnet" target="_blank">PointNet: Deep Learning on Point Sets for 3D Classification and Segmentation</a> by Qi et al. (CVPR 2017 Oral Presentation). Code and data: <a href="https://github.com/charlesq34/pointnet">here</a>.
 * <a href="http://stanford.edu/~rqi/pointnet2" target="_black">PointNet++: Deep Hierarchical Feature Learning on Point Sets in a Metric Space</a> by Qi et al. (NIPS 2017). Code and data: <a href="https://github.com/charlesq34/pointnet2">here</a>.
 
-### Todo
+* <a href="http://stanford.edu/~rqi/frustum-pointnets/" target="_black">Frustum PointNets for 3D Object Detection from RGB-D Data</a> by Qi et al. (CVPR) 2018 . Code and data: <a href="https://github.com/charlesq34/frustum-pointnets">here</a>.
 
-- Add a demo script to run inference of Frustum PointNets based on raw input data.
-- Add related scripts for SUNRGBD dataset
+### Todo
+- [x] Adopting code with CUDA 10
+- [ ] Add revised frustum extraction code
+- [ ] Add a demo script to run inference of Frustum PointNets based on raw input data.
+- [ ] Add related scripts for SUNRGBD dataset
