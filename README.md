@@ -66,5 +66,6 @@ Our code is released under the Apache 2.0 license (see LICENSE file for details)
 
 ### Todo
 - [x] Adopting code with CUDA 10
-- [] Add a demo script to run inference of Frustum PointNets based on raw input data.
-- [] Add related scripts for SUNRGBD dataset
+- [ ] Add revised frustum extraction code
+- [ ] Add a demo script to run inference of Frustum PointNets based on raw input data.
+- [ ] Add related scripts for SUNRGBD dataset
