@@ -1,22 +1,14 @@
 ## Revised Frustum PointNets for 3D Object Detection from RGB-D Data
-Under Construction.
-
-## Introduction
-Under Construction.
-
-## Citation
-Under Construction.
+Under Construction...
 
 ## Installation
-# Version 2:
-This code tested on Ubuntu 18.04.
+This code tested under Ubuntu 18.04.
 - Python 2.7
 - CUDA 10
 - CudNN 7.5
 - Tensorflow 1.14
 - OpenCV 4
 
-# Version 1: 
 Install <a href="https://www.tensorflow.org/install/">TensorFlow</a>.There are also some dependencies for a few Python libraries for data processing and visualizations like `cv2`, `mayavi`  etc. It's highly recommended that you have access to GPUs.
 
 To use the Frustum PointNets v2 model, we need access to a few custom Tensorflow operators from PointNet++. The TF operators are included under `models/tf_ops`, you need to compile them (check `tf_xxx_compile.sh` under each ops subfolder) first. Update `nvcc` and `python` path if necessary. The compile script is written for TF1.4. There is also an option for TF1.2 in the script. If you are using earlier version it's possible that you need to remove the `-D_GLIBCXX_USE_CXX11_ABI=0` flag in g++ command in order to compile correctly.
