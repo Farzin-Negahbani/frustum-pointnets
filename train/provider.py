@@ -137,13 +137,13 @@ class FrustumDataset(object):
         else:
             with open(overwritten_data_path,'rb') as fp:
                 self.id_list = pickle.load(fp)
-                self.box2d_list = pickle.load(fp)
-                self.box3d_list = pickle.load(fp)
-                self.input_list = pickle.load(fp)
-                self.label_list = pickle.load(fp)
-                self.type_list = pickle.load(fp)
+                self.box2d_list   = pickle.load(fp)
+                self.box3d_list   = pickle.load(fp)
+                self.input_list   = pickle.load(fp)
+                self.label_list   = pickle.load(fp)
+                self.type_list    = pickle.load(fp)
                 self.heading_list = pickle.load(fp)
-                self.size_list = pickle.load(fp)
+                self.size_list    = pickle.load(fp)
                 # frustum_angle is clockwise angle from positive x-axis
                 self.frustum_angle_list = pickle.load(fp) 
 

@@ -238,15 +238,15 @@ def train_one_epoch(sess, ops, train_writer):
             get_batch(TRAIN_DATASET, train_idxs, start_idx, end_idx,
                 NUM_POINT, NUM_CHANNEL)
 
-        feed_dict = {ops['pointclouds_pl']: batch_data,
-                     ops['one_hot_vec_pl']: batch_one_hot_vec,
-                     ops['labels_pl']: batch_label,
-                     ops['centers_pl']: batch_center,
-                     ops['heading_class_label_pl']: batch_hclass,
+        feed_dict = {ops['pointclouds_pl']           : batch_data,
+                     ops['one_hot_vec_pl']           : batch_one_hot_vec,
+                     ops['labels_pl']                : batch_label,
+                     ops['centers_pl']               : batch_center,
+                     ops['heading_class_label_pl']   : batch_hclass,
                      ops['heading_residual_label_pl']: batch_hres,
-                     ops['size_class_label_pl']: batch_sclass,
-                     ops['size_residual_label_pl']: batch_sres,
-                     ops['is_training_pl']: is_training,}
+                     ops['size_class_label_pl']      : batch_sclass,
+                     ops['size_residual_label_pl']   : batch_sres,
+                     ops['is_training_pl']           : is_training,}
 
         summary, step, _, loss_val, logits_val, centers_pred_val, \
         iou2ds, iou3ds = \

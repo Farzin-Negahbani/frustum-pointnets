@@ -66,6 +66,7 @@ def demo():
     # Draw 2d and 3d boxes on image
     print(' -------- 2D/3D bounding boxes in images --------')
     show_image_with_boxes(img, objects, calib)
+    print('Press enter for the next step')
     raw_input()
 
     # Show all LiDAR points. Draw 3d box in LiDAR point cloud
@@ -73,11 +74,13 @@ def demo():
     #show_lidar_with_boxes(pc_velo, objects, calib)
     #raw_input()
     show_lidar_with_boxes(pc_velo, objects, calib, True, img_width, img_height)
+    print('Press enter for the next step')
     raw_input()
 
     # Visualize LiDAR points on images
     print(' -------- LiDAR points projected to image plane --------')
     show_lidar_on_image(pc_velo, img, calib, img_width, img_height) 
+    print('Press enter for the next step')
     raw_input()
     
     # Show LiDAR points that are in the 3d box
@@ -92,11 +95,12 @@ def demo():
     draw_lidar(box3droi_pc_velo, fig=fig)
     draw_gt_boxes3d([box3d_pts_3d_velo], fig=fig)
     mlab.show(1)
+    print('Press enter for the next step')
     raw_input()
     
     # UVDepth Image and its backprojection to point clouds
     print(' -------- LiDAR points in a frustum from a 2D box --------')
-    imgfov_pc_velo, pts_2d, fov_inds = get_lidar_in_image_fov(pc_velo,
+    imgfov_pc_velo, pts_2d, fov_inds = get_lidar_in_image_fov(pc_velo, 
         calib, 0, 0, img_width, img_height, True)
     imgfov_pts_2d = pts_2d[fov_inds,:]
     imgfov_pc_rect = calib.project_velo_to_rect(imgfov_pc_velo)
@@ -127,6 +131,7 @@ def demo():
         fgcolor=None, engine=None, size=(1000, 500))
     draw_lidar(boxfov_pc_velo, fig=fig)
     mlab.show(1)
+    print('Press enter for quiting')
     raw_input()
 
 def random_shift_box2d(box2d, shift_ratio=0.1):
@@ -211,6 +216,20 @@ def extract_frustum_data(idx_filename, split, output_filename, viz=False,
                     (pc_image_coord[:,1]>=ymin)
                 box_fov_inds = box_fov_inds & img_fov_inds
                 pc_in_box_fov = pc_rect[box_fov_inds,:]
+
+
+                """
+                Farzin&Onur this place has to be edited.
+
+                Please refer to the log file Onur preparing 
+                for the correct implementation of this.
+                """
+
+                
+
+
+
+
                 # Get frustum angle (according to center pixel in 2D BOX)
                 box2d_center = np.array([(xmin+xmax)/2.0, (ymin+ymax)/2.0])
                 uvdepth = np.zeros((1,3))
@@ -255,7 +274,7 @@ def extract_frustum_data(idx_filename, split, output_filename, viz=False,
         pickle.dump(id_list, fp)
         pickle.dump(box2d_list,fp)
         pickle.dump(box3d_list,fp)
-        pickle.dump(input_list, fp)
+        pickle.dump(input_list, fp) #This is the refined pointcloud
         pickle.dump(label_list, fp)
         pickle.dump(type_list, fp)
         pickle.dump(heading_list, fp)
@@ -400,8 +419,8 @@ def extract_frustum_data_rgb_detection(det_filename, split, output_filename,
         frustum_angle_list.append(frustum_angle)
     
     with open(output_filename,'wb') as fp:
-        pickle.dump(id_list, fp)
-        pickle.dump(box2d_list,fp)
+        pickle.dump(id_list, fp)            #ID
+        pickle.dump(box2d_list,fp)          
         pickle.dump(input_list, fp)
         pickle.dump(type_list, fp)
         pickle.dump(frustum_angle_list, fp)

@@ -171,6 +171,7 @@ def write_detection_results(result_dir, id_list, type_list, box2d_list, center_l
         output_str += "%f %f %f %f %f %f %f %f" % (h,w,l,tx,ty,tz,ry,score)
         if idx not in results: results[idx] = []
         results[idx].append(output_str)
+	print('train/test.py: 2')
 
     # Write TXT files
     if not os.path.exists(result_dir): os.mkdir(result_dir)
@@ -182,6 +183,8 @@ def write_detection_results(result_dir, id_list, type_list, box2d_list, center_l
         for line in results[idx]:
             fout.write(line+'\n')
         fout.close() 
+    print('train/test.py: 3')
+
 
 def fill_files(output_dir, to_fill_filename_list):
     ''' Create empty files if not exist for the filelist. '''
@@ -266,6 +269,7 @@ def test_from_rgb_detection(output_filename, result_dir=None):
         TEST_DATASET.type_list, TEST_DATASET.box2d_list,
         center_list, heading_cls_list, heading_res_list,
         size_cls_list, size_res_list, rot_angle_list, score_list)
+    print('train/test.py: 1')
     # Make sure for each frame (no matter if we have measurment for that frame),
     # there is a TXT file
     output_dir = os.path.join(result_dir, 'data')
@@ -273,6 +277,7 @@ def test_from_rgb_detection(output_filename, result_dir=None):
         to_fill_filename_list = [line.rstrip()+'.txt' \
             for line in open(FLAGS.idx_path)]
         fill_files(output_dir, to_fill_filename_list)
+    print('train/test.py: 4')
 
 def test(output_filename, result_dir=None):
     ''' Test frustum pointnets with GT 2D boxes.
@@ -354,4 +359,5 @@ if __name__=='__main__':
     if FLAGS.from_rgb_detection:
         test_from_rgb_detection(FLAGS.output+'.pickle', FLAGS.output)
     else:
+	println('train:test.py: 5')
         test(FLAGS.output+'.pickle', FLAGS.output)
