@@ -132,12 +132,12 @@ def inference(sess, ops, pc, one_hot_vec, batch_size):
         size_residuals[i*batch_size:(i+1)*batch_size,...] = batch_size_residuals
 
         # Compute scores
-        batch_seg_prob = softmax(batch_logits)[:,:,1] # BxN
-        batch_seg_mask = np.argmax(batch_logits, 2) # BxN
-        mask_mean_prob = np.sum(batch_seg_prob * batch_seg_mask, 1) # B,
-        mask_mean_prob = mask_mean_prob / np.sum(batch_seg_mask,1) # B,
-        heading_prob = np.max(softmax(batch_heading_scores),1) # B
-        size_prob = np.max(softmax(batch_size_scores),1) # B,
+        batch_seg_prob = softmax(batch_logits)[:,:,1]               #BxN
+        batch_seg_mask = np.argmax(batch_logits, 2)                 #BxN
+        mask_mean_prob = np.sum(batch_seg_prob * batch_seg_mask, 1) #B,
+        mask_mean_prob = mask_mean_prob / np.sum(batch_seg_mask,1)  #B,
+        heading_prob = np.max(softmax(batch_heading_scores),1)      #B
+        size_prob = np.max(softmax(batch_size_scores),1)            #B,
         batch_scores = np.log(mask_mean_prob) + np.log(heading_prob) + np.log(size_prob)
         scores[i*batch_size:(i+1)*batch_size] = batch_scores 
         # Finished computing scores
@@ -348,16 +348,28 @@ def test(output_filename, result_dir=None):
             pickle.dump(rot_angle_list, fp)
             pickle.dump(score_list, fp)
 
-    # Write detection results for KITTI evaluation
+    # Write detection results for KITTI evaluation,
     write_detection_results(result_dir, TEST_DATASET.id_list,
         TEST_DATASET.type_list, TEST_DATASET.box2d_list, center_list,
         heading_cls_list, heading_res_list,
         size_cls_list, size_res_list, rot_angle_list, score_list)
+    print('train/test.py: 1')
+    # Make sure for each frame (no matter if we have measurment for that frame),
+    # there is a TXT file
+    output_dir = os.path.join(result_dir, 'data')
+    if FLAGS.idx_path is not None:
+        to_fill_filename_list = [line.rstrip()+'.txt' \
+            for line in open(FLAGS.idx_path)]
+        fill_files(output_dir, to_fill_filename_list)
+    print('train/test.py: 4')
+
+
+
+
 
 
 if __name__=='__main__':
     if FLAGS.from_rgb_detection:
         test_from_rgb_detection(FLAGS.output+'.pickle', FLAGS.output)
     else:
-	println('train:test.py: 5')
         test(FLAGS.output+'.pickle', FLAGS.output)

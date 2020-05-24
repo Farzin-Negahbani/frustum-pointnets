@@ -12,8 +12,8 @@ import importlib
 import numpy as np
 import tensorflow as tf
 from datetime import datetime
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-ROOT_DIR = os.path.dirname(BASE_DIR)
+BASE_DIR    = os.path.dirname(os.path.abspath(__file__))
+ROOT_DIR    = os.path.dirname(BASE_DIR)
 sys.path.append(BASE_DIR)
 sys.path.append(os.path.join(ROOT_DIR, 'models'))
 import provider
@@ -33,6 +33,8 @@ parser.add_argument('--decay_step', type=int, default=200000, help='Decay step f
 parser.add_argument('--decay_rate', type=float, default=0.7, help='Decay rate for lr decay [default: 0.7]')
 parser.add_argument('--no_intensity', action='store_true', help='Only use XYZ for training')
 parser.add_argument('--restore_model_path', default=None, help='Restore model path e.g. log/model.ckpt [default: None]')
+parser.add_argument('--frustum_folder', default=None, help='Folder that contains frustums.')
+parser.add_argument('--two_frustum', action='store_true', help='Train on two frustums version[default 1 frustum].')
 FLAGS = parser.parse_args()
 
 # Set training configurations
@@ -63,11 +65,19 @@ BN_DECAY_DECAY_RATE = 0.5
 BN_DECAY_DECAY_STEP = float(DECAY_STEP)
 BN_DECAY_CLIP = 0.99
 
-# Load Frustum Datasets. Use default data paths.
-TRAIN_DATASET = provider.FrustumDataset(npoints=NUM_POINT, split='train',
-    rotate_to_center=True, random_flip=True, random_shift=True, one_hot=True)
-TEST_DATASET = provider.FrustumDataset(npoints=NUM_POINT, split='val',
-    rotate_to_center=True, one_hot=True)
+# Load Frustum Datasets. 
+if FLAGS.two_frustum:
+    data_path_train = os.path.join(ROOT_DIR,'kitti/'+FLAGS.frustum_folder+'/two_frustum_carpedcyc_train.pickle')
+    data_path_val   = os.path.join(ROOT_DIR,'kitti/'+FLAGS.frustum_folder+'/two_frustum_carpedcyc_val.pickle')
+else:
+    data_path_train = os.path.join(ROOT_DIR,'kitti/'+FLAGS.frustum_folder+'/frustum_carpedcyc_train.pickle')
+    data_path_val   = os.path.join(ROOT_DIR,'kitti/'+FLAGS.frustum_folder+'/frustum_carpedcyc_val.pickle')
+
+print("Loading train frustums from: ",data_path_train)
+print("Loading val   frustums from: ",data_path_val)
+
+TRAIN_DATASET = provider.FrustumDataset(overwritten_data_path= data_path_train,npoints=NUM_POINT, split='train',rotate_to_center=True, random_flip=True, random_shift=True, one_hot=True)
+TEST_DATASET = provider.FrustumDataset(overwritten_data_path= data_path_val,npoints=NUM_POINT, split='val',rotate_to_center=True, one_hot=True)
 
 def log_string(out_str):
     LOG_FOUT.write(out_str+'\n')

@@ -21,7 +21,7 @@ class Object3d(object):
         self.occlusion = int(data[2]) # 0=visible, 1=partly occluded, 2=fully occluded, 3=unknown
         self.alpha = data[3] # object observation angle [-pi..pi]
 
-        # extract 2d bounding box in 0-based coordinates
+        # extract 2d bounding box in 0-based coordinates (reference camera coordinate)
         self.xmin = data[4] # left
         self.ymin = data[5] # top
         self.xmax = data[6] # right
@@ -84,7 +84,7 @@ class Calibration(object):
         else:
             calibs = self.read_calib_file(calib_filepath)
         # Projection matrix from rect camera coord to image2 coord
-        self.P = calibs['P2'] 
+        self.P = calibs['P2']
         self.P = np.reshape(self.P, [3,4])
         # Rigid transform from Velodyne coord to reference camera coord
         self.V2C = calibs['Tr_velo_to_cam']
@@ -101,6 +101,50 @@ class Calibration(object):
         self.f_v = self.P[1,1]
         self.b_x = self.P[0,3]/(-self.f_u) # relative 
         self.b_y = self.P[1,3]/(-self.f_v)
+
+
+        """
+        Onurs method
+
+        The Px matrices project a point in the rectified
+        referenced camera coordinate to the camera_x image.
+        camera_0 is the reference camera coordinate. R0_rect
+        is the rectifying rotation for reference coordinate
+        ( rectification makes images of multiple cameras lie
+        on the same plan). Tr_velo_to_cam maps a point in point
+         cloud coordinate to reference co-ordinate.
+         
+        https://github.com/yanii/kitti-pcl/blob/master/KITTI_README.TXT
+
+        https://stackoverflow.com/questions/29407474/how-to-understand-the-kitti-camera-calibration-files
+         
+        Will do 2 tests here. The first test is to project 3D
+        bounding boxes from label file onto image. Second
+        test is to project a point in point cloud coordinate
+        to image. The algebra is simple as follows. The first
+        equation is for projecting the 3D bouding boxes in 
+        reference camera co-ordinate to camera_2 image. 
+        The second equation projects a velodyne co-ordinate
+        point into the camera_2 image. y_image = P2 * R0_rect
+        * R0_rot * x_ref_coord y_image = P2 * R0_rect * Tr_velo_to_cam
+        * x_velo_coord In the above, R0_rot is the rotation
+        matrix to map from object coordinate to reference coordinate."
+
+        Here a link for more info:
+        https://medium.com/test-ttile/kitti-3d-object-detection-dataset-d78a762b5a4
+        """
+
+        self.P3 = calibs['P3']
+        self.P3 = np.reshape(self.P3, [3,4])
+        self.c_u_3 = self.P3[0,2]
+        self.c_v_3 = self.P3[1,2]
+        self.f_u_3 = self.P3[0,0]
+        self.f_v_3 = self.P3[1,1]
+        self.b_x_3 = self.P3[0,3]/(-self.f_u_3) # relative 
+        self.b_y_3 = self.P3[1,3]/(-self.f_v_3)
+
+
+
 
     def read_calib_file(self, filepath):
         ''' Read in a calibration file and parse into a dictionary.
@@ -147,32 +191,33 @@ class Calibration(object):
     # =========================== 
     # ------- 3d to 3d ---------- 
     # =========================== 
-    def project_velo_to_ref(self, pts_3d_velo):
+    def project_velo_to_ref(self, pts_3d_velo): 
         pts_3d_velo = self.cart2hom(pts_3d_velo) # nx4
-        return np.dot(pts_3d_velo, np.transpose(self.V2C))
+        return np.dot(pts_3d_velo, np.transpose(self.V2C))#Velodyne to reference camera
 
-    def project_ref_to_velo(self, pts_3d_ref):
+    def project_ref_to_velo(self, pts_3d_ref): #
         pts_3d_ref = self.cart2hom(pts_3d_ref) # nx4
         return np.dot(pts_3d_ref, np.transpose(self.C2V))
 
-    def project_rect_to_ref(self, pts_3d_rect):
+    def project_rect_to_ref(self, pts_3d_rect): 
         ''' Input and Output are nx3 points '''
         return np.transpose(np.dot(np.linalg.inv(self.R0), np.transpose(pts_3d_rect)))
     
     def project_ref_to_rect(self, pts_3d_ref):
         ''' Input and Output are nx3 points '''
         return np.transpose(np.dot(self.R0, np.transpose(pts_3d_ref)))
- 
-    def project_rect_to_velo(self, pts_3d_rect):
+
+    def project_rect_to_velo(self, pts_3d_rect): 
         ''' Input: nx3 points in rect camera coord.
             Output: nx3 points in velodyne coord.
         ''' 
         pts_3d_ref = self.project_rect_to_ref(pts_3d_rect)
         return self.project_ref_to_velo(pts_3d_ref)
 
-    def project_velo_to_rect(self, pts_3d_velo):
+    def project_velo_to_rect(self, pts_3d_velo): 
         pts_3d_ref = self.project_velo_to_ref(pts_3d_velo)
         return self.project_ref_to_rect(pts_3d_ref)
+
 
     # =========================== 
     # ------- 3d to 2d ---------- 
@@ -186,6 +231,17 @@ class Calibration(object):
         pts_2d[:,0] /= pts_2d[:,2]
         pts_2d[:,1] /= pts_2d[:,2]
         return pts_2d[:,0:2]
+
+
+    def project_rect_to_image_right(self, pts_3d_rect):
+        ''' Input: nx3 points in rect camera coord.
+            Output: nx2 points in image3 coord.
+        '''
+        pts_3d_rect = self.cart2hom(pts_3d_rect)
+        pts_2d = np.dot(pts_3d_rect, np.transpose(self.P3)) # nx3
+        pts_2d[:,0] /= pts_2d[:,2]
+        pts_2d[:,1] /= pts_2d[:,2]
+        return pts_2d[:,0:2]
     
     def project_velo_to_image(self, pts_3d_velo):
         ''' Input: nx3 points in velodyne coord.
@@ -193,6 +249,14 @@ class Calibration(object):
         '''
         pts_3d_rect = self.project_velo_to_rect(pts_3d_velo)
         return self.project_rect_to_image(pts_3d_rect)
+
+    def project_velo_to_image_right(self, pts_3d_velo):
+        ''' Input: nx3 points in velodyne coord.
+            Output: nx2 points in image2 coord.
+        '''
+        pts_3d_rect = self.project_velo_to_rect(pts_3d_velo)
+        return self.project_rect_to_image_right(pts_3d_rect)
+
 
     # =========================== 
     # ------- 2d to 3d ---------- 
@@ -288,12 +352,11 @@ def project_to_image(pts_3d, P):
     '''
     n = pts_3d.shape[0]
     pts_3d_extend = np.hstack((pts_3d, np.ones((n,1))))
-    print(('pts_3d_extend shape: ', pts_3d_extend.shape))
+    #print(('pts_3d_extend shape: ', pts_3d_extend.shape))
     pts_2d = np.dot(pts_3d_extend, np.transpose(P)) # nx3
     pts_2d[:,0] /= pts_2d[:,2]
     pts_2d[:,1] /= pts_2d[:,2]
     return pts_2d[:,0:2]
-
 
 def compute_box_3d(obj, P):
     ''' Takes an object and a projection matrix (P) and projects the 3d
@@ -303,7 +366,7 @@ def compute_box_3d(obj, P):
             corners_3d: (8,3) array in in rect camera coord.
     '''
     # compute rotational matrix around yaw axis
-    R = roty(obj.ry)    
+    R = roty(obj.ry)
 
     # 3d bounding box dimensions
     l = obj.l;
