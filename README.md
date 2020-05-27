@@ -1,5 +1,14 @@
-## Revised Frustum PointNets for 3D Object Detection from RGB-D Data
-Under Construction...
+## Stereo Frustum PointNets for 3D Object Detection
+This repo contains codes and script for "Stereo Frustum PointNets for 3D Object Detection".
+
+<p align="center">    
+  <img width="400" height="280" src="https://github.com/Farzin-Negahbani/stereo-frustum-pointnets/blob/master/Img/pipeline.png">
+</p>
+
+<p align="center">    
+  <img width="400" height="280" src="https://github.com/Farzin-Negahbani/stereo-frustum-pointnets/blob/master/Img/frustums.png">
+</p>
+
 
 ## Installation
 This code tested under Ubuntu 18.04.
@@ -66,6 +75,7 @@ Our code is released under the Apache 2.0 license (see LICENSE file for details)
 
 ### Todo
 - [x] Adopting code with CUDA 10
-- [ ] Add revised frustum extraction code
-- [ ] Add a demo script to run inference of Frustum PointNets based on raw input data.
+- [x] Add revised frustum extraction code
+- [x] Add Intensirty refinement
+- [x] Add a demo script to run inference of Frustum PointNets based on raw input data.
 - [ ] Add related scripts for SUNRGBD dataset
