@@ -2,11 +2,11 @@
 This repo contains codes and script for "Stereo Frustum PointNets for 3D Object Detection".
 
 <p align="center">    
-  <img width="400" height="280" src="https://github.com/Farzin-Negahbani/stereo-frustum-pointnets/blob/master/Img/pipeline.png">
+  <img  src="https://github.com/Farzin-Negahbani/stereo-frustum-pointnets/blob/master/pipeline.png">
 </p>
 
 <p align="center">    
-  <img width="400" height="280" src="https://github.com/Farzin-Negahbani/stereo-frustum-pointnets/blob/master/Img/frustums.png">
+  <img src="https://github.com/Farzin-Negahbani/stereo-frustum-pointnets/blob/master/frustums.png">
 </p>
 
 
