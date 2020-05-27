@@ -5,6 +5,9 @@ This repo contains codes and script for "Stereo Frustum PointNets for 3D Object 
   <img  src="https://github.com/Farzin-Negahbani/stereo-frustum-pointnets/blob/master/pipeline.png">
 </p>
 
+
+#### Two Frustums Visualization
+
 <p align="center">    
   <img src="https://github.com/Farzin-Negahbani/stereo-frustum-pointnets/blob/master/frustums.png">
 </p>
